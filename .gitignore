@@ -1,29 +1,21 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# ══════════════════════════════════════════════
+# BooyahX — Root .gitignore
+# Covers: Flutter + Node.js Backend + IDE + OS
+# ══════════════════════════════════════════════
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
+# ── Environment Files (SECRETS) ──
+.env
+.env.*
+!.env.example
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# ── Backend / Node.js ──
+backend/node_modules/
+backend/package-lock.json
+backend/logs/
+backend/coverage/
+backend/*.log
 
-# Flutter/Dart/Pub related
+# ── Flutter / Dart / Pub ──
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -31,18 +23,81 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-/coverage/
+/flutter-plugins
+.flutter-plugins
 
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
+# ── Flutter Build Artifacts ──
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/.gradle
+/android/local.properties
+/android/key.properties
+/android/*.jks
+/android/*.keystore
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Runner.xcworkspace/xcshareddata/
+/ios/Flutter/App.framework
+/ios/Flutter/Generated.xcconfig
+/macos/Pods/
+/macos/Flutter/ephemeral/
+/web/favicon.png
 
-# Widget Preview related
+# ── Symbolication / Obfuscation ──
+app.*.symbols
+app.*.map.json
+
+# ── IDEs ──
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ── macOS ──
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── Windows ──
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── Linux ──
+*~
+
+# ── Logs ──
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Coverage ──
+coverage/
+.nyc_output/
+
+# ── Misc ──
+*.class
+*.pyc
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 .widget_preview/
+analyser_output
