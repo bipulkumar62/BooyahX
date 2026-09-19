@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="mobile_stack" name="shell-type"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@600;700;800&amp;family=Chivo:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        background-color: #f8fafc;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .pt-safe {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-variant": "#f1f5f9",
+            "background": "#f8fafc",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#475569",
+            "surface-container": "#ffffff",
+            "surface-container-low": "#f8fafc",
+            "surface-container-high": "#f1f5f9",
+            "surface-container-highest": "#e2e8f0",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#0284c7",
+            "primary-container": "#0284c7",
+            "tertiary": "#d97706",
+            "tertiary-container": "#fef3c7"
+          },
+          fontFamily: {
+            "label-caps": ["Space Grotesk", "sans-serif"],
+            "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "title-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "label-numeric": ["Space Grotesk", "sans-serif"],
+            "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "caption": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Space Grotesk", "sans-serif"],
+            "headline-md": ["Space Grotesk", "sans-serif"],
+            "body-md": ["Plus Jakarta Sans", "sans-serif"],
+            "title-md": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-slate-50 font-body-md text-body-md text-slate-900 flex flex-col min-h-screen antialiased">
+<!-- Top Navigation Header -->
+<header class="fixed top-0 w-full z-50 pt-safe bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+<div class="h-16 px-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800 hover:bg-slate-200 transition-colors shadow-sm" onclick="history.back()">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<h1 class="font-bold text-slate-900 text-lg tracking-tight truncate max-w-[200px]">Tournament Rules</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-9 px-3 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-1.5 shadow-sm">
+<span class="font-bold text-amber-600 text-sm font-label-numeric">₹</span>
+<span class="font-bold text-slate-900 text-sm font-label-numeric">450</span>
+</div>
+<div class="w-9 h-9 rounded-full bg-sky-600 border border-sky-700 flex items-center justify-center text-white shadow-sm">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex flex-col relative w-full pt-16 pb-safe bg-slate-50">
+<div class="flex flex-col w-full px-4 pb-36">
+<!-- Top Overview Card -->
+<div class="w-full mt-3 rounded-2xl overflow-hidden bg-white border border-slate-200/90 shadow-md">
+<!-- Map Thumbnail Banner & Overlays -->
+<div class="relative w-full h-44 bg-cover bg-center" data-alt="Futuristic tactical tropical island map Bermuda from Free Fire MAX, intense volumetric dusk lighting, cyber neon blue atmospheric glow, cinematic drone angle, hyper-realistic gaming tournament render with subtle dust motes and warm amber contrasts" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuACOqYlW0gZDYZPk-0WsD8Lne4lRc1XywMYIGSMwFFr27VYMq9KGCfz0LyJ7V5u5d_u3ahxykWN1Y7JBKIq6QIW95gCfgZznGF8QUzSOXjCBAVqxlfOeO-M3sAq2QPO9KCuesgYeVcAngIHN1DARdJygBtDyEDuROO7HG9s0lpT3_M0BMoIPY54BYwVkmTK7S4oHcY5nLzlxnk9YcRgISOD6wgbeCgPyxbVSPb9O4X_WxDVmYfyez8e')">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
+<!-- Top Badges inside Banner -->
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-sky-700 font-bold text-xs tracking-wider uppercase shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              REGISTRATION OPEN
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white font-medium text-xs">
+<span class="material-symbols-outlined text-[14px] text-amber-400">public</span>
+              India Region
+            </span>
+</div>
+<!-- Map & Format chips -->
+<div class="absolute bottom-3 left-3 flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-md font-bold text-[11px] tracking-wide text-slate-900 uppercase shadow-sm">MAP: BERMUDA</span>
+<span class="px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-md font-bold text-[11px] tracking-wide text-slate-900 uppercase shadow-sm">SOLO • TPP</span>
+</div>
+</div>
+<!-- Title & Match Schedule -->
+<div class="p-4 flex flex-col gap-1.5">
+<p class="text-xs text-sky-600 tracking-wide font-bold uppercase">Free Fire MAX • SOLO Battle Royale</p>
+<h2 class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">Bermuda Championship #104</h2>
+<div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-100">
+<div class="flex items-center gap-1.5 text-slate-600">
+<span class="material-symbols-outlined text-[17px] text-slate-500">schedule</span>
+<span class="text-xs font-semibold text-slate-700">Today, 08:30 PM IST</span>
+</div>
+<div class="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+<span class="text-xs font-bold">24 slots left</span>
+</div>
+</div>
+<!-- Capacity Progress Bar -->
+<div class="w-full mt-2">
+<div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+<div class="h-full bg-sky-500 rounded-full transition-all" style="width: 76%;"></div>
+</div>
+<div class="flex justify-between items-center mt-1.5">
+<span class="text-xs font-medium text-slate-500">76 / 100 Players</span>
+<span class="text-xs text-sky-700 font-bold">76% Full</span>
+</div>
+</div>
+<!-- Key Stats Matrix (4 Column Grid) -->
+<div class="grid grid-cols-4 gap-2 mt-3 pt-3 bg-slate-50 border border-slate-200/80 p-3 rounded-xl">
+<div class="flex flex-col items-center justify-center text-center">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Entry</span>
+<span class="font-extrabold text-base text-slate-900 font-label-numeric mt-0.5">₹50</span>
+</div>
+<div class="flex flex-col items-center justify-center text-center border-l border-slate-200">
+<span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Prize Pool</span>
+<span class="font-extrabold text-base text-amber-600 font-label-numeric mt-0.5">₹10,000</span>
+</div>
+<div class="flex flex-col items-center justify-center text-center border-l border-slate-200">
+<span class="text-[10px] font-bold text-sky-700 uppercase tracking-wider">Per Kill</span>
+<span class="font-extrabold text-base text-sky-700 font-label-numeric mt-0.5">₹25</span>
+</div>
+<div class="flex flex-col items-center justify-center text-center border-l border-slate-200">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Mode</span>
+<span class="font-extrabold text-base text-slate-900 font-label-numeric mt-0.5">TPP</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Segmented Navigation Tabs -->
+<div class="flex items-center gap-1.5 mt-5 p-1 bg-slate-200/80 border border-slate-300 rounded-xl">
+<button class="flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-1.5 border border-slate-200/60" id="tab-prize" onclick="switchTab('prize')">
+<span class="material-symbols-outlined text-[18px] text-amber-500">trophy</span>
+<span>Prize Pool</span>
+</button>
+<button class="flex-1 py-2 px-3 rounded-lg text-slate-600 font-semibold text-sm hover:text-slate-900 transition-all flex items-center justify-center gap-1.5" id="tab-players" onclick="switchTab('players')">
+<span>Players (76)</span>
+</button>
+<button class="flex-1 py-2 px-3 rounded-lg text-slate-600 font-semibold text-sm hover:text-slate-900 transition-all flex items-center justify-center gap-1.5" id="tab-rules" onclick="switchTab('rules')">
+<span>Rules</span>
+</button>
+</div>
+<!-- Tab Content 1: Prize Pool -->
+<div class="flex flex-col gap-2.5 mt-3.5" id="content-prize">
+<!-- Top Eliminator Special Bounty Spotlight -->
+<div class="p-3.5 rounded-xl bg-gradient-to-r from-amber-50 via-amber-50/70 to-white border border-amber-200/80 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[22px]">military_tech</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Top Eliminator Bonus</span>
+<span class="text-xs text-slate-500">Highest match kills</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-extrabold text-amber-700 text-lg font-label-numeric">₹500</span>
+</div>
+</div>
+<!-- 1st Place Gold Champion -->
+<div class="relative overflow-hidden p-3.5 rounded-xl bg-white border-2 border-amber-300 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-amber-400 text-amber-950 flex flex-col items-center justify-center shadow font-extrabold border border-amber-500/40">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="text-[10px] font-black leading-none">1ST</span>
+</div>
+<div class="flex flex-col">
+<span class="font-extrabold text-slate-900 text-base">Champion</span>
+<span class="text-xs text-amber-700 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">stars</span> Winner Trophy + Title
+              </span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-extrabold text-slate-900 text-xl font-label-numeric">₹3,500</span>
+<span class="text-[11px] font-semibold text-slate-500">35% of pool</span>
+</div>
+</div>
+<!-- 2nd Place Silver -->
+<div class="p-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-slate-200 text-slate-800 flex flex-col items-center justify-center font-bold border border-slate-300">
+<span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+<span class="text-[9px] font-black leading-none">2ND</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Runner Up</span>
+<span class="text-xs text-slate-500 font-medium">Silver Tier</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-extrabold text-slate-900 text-lg font-label-numeric">₹2,000</span>
+<span class="text-[11px] font-semibold text-slate-500">20% of pool</span>
+</div>
+</div>
+<!-- 3rd Place Bronze -->
+<div class="p-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-800 flex flex-col items-center justify-center font-bold border border-orange-200">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+<span class="text-[9px] font-black leading-none">3RD</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">2nd Runner Up</span>
+<span class="text-xs text-slate-500 font-medium">Bronze Tier</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-extrabold text-slate-900 text-lg font-label-numeric">₹1,200</span>
+<span class="text-[11px] font-semibold text-slate-500">12% of pool</span>
+</div>
+</div>
+<!-- 4th - 5th Place -->
+<div class="p-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs border border-slate-200 font-label-caps">
+              #4 - #5
+            </div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Semi-Finalists</span>
+<span class="text-xs text-slate-500 font-medium">Top 5 Survival</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-bold text-slate-900 text-base font-label-numeric">₹600 <span class="text-xs font-normal text-slate-500">each</span></span>
+<span class="text-[11px] text-slate-500">Total: ₹1,200</span>
+</div>
+</div>
+<!-- 6th - 10th Place -->
+<div class="p-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs border border-slate-200 font-label-caps">
+              #6 - #10
+            </div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Top Ten Finishers</span>
+<span class="text-xs text-slate-500 font-medium">Placement Cashout</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-bold text-slate-900 text-base font-label-numeric">₹250 <span class="text-xs font-normal text-slate-500">each</span></span>
+<span class="text-[11px] text-slate-500">Total: ₹1,250</span>
+</div>
+</div>
+<!-- Kill Bounty Policy Box -->
+<div class="mt-1 p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex items-start gap-3 shadow-sm">
+<div class="p-2 rounded-lg bg-sky-600 text-white shadow-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<span class="font-bold text-sky-900 text-sm">Kill Bounty Assurance</span>
+<p class="text-xs text-slate-700 leading-relaxed">
+              ₹25 credited per verified kill to your BooyahX wallet within 30 mins after match conclusion and anti-cheat validation.
+            </p>
+</div>
+</div>
+</div>
+<!-- Tab Content 2: Joined Players -->
+<div class="hidden flex-col gap-2 mt-3.5" id="content-players">
+<div class="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-slate-100 text-slate-900 border border-slate-200 flex items-center justify-center font-bold text-xs font-label-caps">#1</div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Xenon_Striker</span>
+<span class="text-xs text-slate-500">UID: 849301294 • Lvl 72</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-sky-100 text-sky-800 font-bold text-xs tracking-wide uppercase border border-sky-200">SLOT 01</span>
+</div>
+<div class="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-slate-100 text-slate-900 border border-slate-200 flex items-center justify-center font-bold text-xs font-label-caps">#2</div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Hydra_NinjaFF</span>
+<span class="text-xs text-slate-500">UID: 190483726 • Lvl 68</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-sky-100 text-sky-800 font-bold text-xs tracking-wide uppercase border border-sky-200">SLOT 02</span>
+</div>
+<div class="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-slate-100 text-slate-900 border border-slate-200 flex items-center justify-center font-bold text-xs font-label-caps">#3</div>
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 text-sm">Viper_Ares</span>
+<span class="text-xs text-slate-500">UID: 938210384 • Lvl 65</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-sky-100 text-sky-800 font-bold text-xs tracking-wide uppercase border border-sky-200">SLOT 03</span>
+</div>
+<div class="text-center py-3 text-slate-500 font-semibold text-xs">
+          + 73 more competitors confirmed
+        </div>
+</div>
+<!-- Tab Content 3: Rules & Instructions -->
+<div class="hidden flex-col gap-2.5 mt-3.5" id="content-rules">
+<div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col gap-1">
+<span class="font-bold text-slate-900 text-sm">1. Room ID &amp; Password</span>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Credentials will be revealed 15 minutes prior to match launch directly in this app. Ensure you join on your registered in-game account.
+          </p>
+</div>
+<div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col gap-1">
+<span class="font-bold text-slate-900 text-sm">2. Fair Play &amp; Anti-Cheat</span>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Teaming, emulator usage without notice, or 3rd-party script injections lead to an immediate ban and forfeiture of all prizes.
+          </p>
+</div>
+<div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col gap-1">
+<span class="font-bold text-slate-900 text-sm">3. Screenshot Verification</span>
+<p class="text-xs text-slate-600 leading-relaxed">
+            Take a victory screenshot showing your rank and total kills immediately upon match conclusion for payout audits.
+          </p>
+</div>
+</div>
+</div>
+<!-- Fixed Floating Bottom Registration Drawer (White Light Mode) -->
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+<div class="max-w-md mx-auto px-4 py-3 flex flex-col gap-2.5">
+<!-- Fee Summary & Wallet Balance Row -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Entry Price</span>
+<div class="flex items-baseline gap-1.5">
+<span class="text-2xl font-black text-slate-900 font-label-numeric leading-none">₹50</span>
+<span class="text-[11px] font-bold text-sky-700 uppercase">SOLO SLOT</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-xs font-medium text-slate-700">Wallet: <strong class="text-slate-900 font-extrabold font-label-numeric">₹450</strong></span>
+<span class="text-[11px] text-emerald-700 font-bold">(Sufficient)</span>
+</div>
+</div>
+<!-- Primary Action CTA -->
+<button class="w-full h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-base flex items-center justify-center gap-2 shadow-md shadow-sky-600/20 active:scale-[0.98] transition-all" id="join-btn" onclick="handleJoinTournament()">
+<span class="material-symbols-outlined text-[20px]">sports_esports</span>
+<span>Join Tournament (₹50)</span>
+</button>
+</div>
+</div>
+<!-- Instant Slot Confirmation Modal Overlay -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4" id="confirm-modal">
+<div class="w-full max-w-sm bg-white rounded-2xl p-6 flex flex-col items-center text-center shadow-2xl border border-slate-200">
+<div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[32px]">check_circle</span>
+</div>
+<h3 class="text-xl font-extrabold text-slate-900">Slot Confirmed!</h3>
+<p class="text-xs text-slate-600 mt-1">
+          You are officially registered for <strong class="text-slate-900">Bermuda Championship #104</strong>.
+        </p>
+<div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 my-4 flex flex-col gap-2 text-left">
+<div class="flex justify-between items-center">
+<span class="text-xs font-semibold text-slate-500">Allocated Slot</span>
+<span class="font-extrabold text-sm text-sky-700 font-label-numeric">#77</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-semibold text-slate-500">Room Credentials</span>
+<span class="text-xs font-bold text-amber-700">Live at 08:15 PM</span>
+</div>
+</div>
+<button class="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition-colors" onclick="closeModal()">
+          Got It, Back to Lobby
+        </button>
+</div>
+</div>
+</main>
+<script>
+    function switchTab(tabId) {
+      const tabs = ['prize', 'players', 'rules'];
+      tabs.forEach(tab => {
+        const content = document.getElementById('content-' + tab);
+        const btn = document.getElementById('tab-' + tab);
+        if (tab === tabId) {
+          content.classList.remove('hidden');
+          content.classList.add('flex');
+          btn.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'border', 'border-slate-200/60');
+          btn.classList.remove('text-slate-600');
+        } else {
+          content.classList.add('hidden');
+          content.classList.remove('flex');
+          btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm', 'border', 'border-slate-200/60');
+          btn.classList.add('text-slate-600');
+        }
+      });
+    }
+
+    function handleJoinTournament() {
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      const joinBtn = document.getElementById('join-btn');
+      joinBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">verified</span> Joined • Slot #77';
+      joinBtn.disabled = true;
+      joinBtn.classList.remove('bg-sky-600', 'hover:bg-sky-700', 'shadow-sky-600/20');
+      joinBtn.classList.add('bg-slate-200', 'text-slate-500', 'cursor-not-allowed');
+    }
+  </script>
+</body></html>

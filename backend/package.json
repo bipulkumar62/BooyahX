@@ -1,0 +1,30 @@
+{
+  "name": "booyahx-backend",
+  "version": "1.0.0",
+  "description": "BooyahX REST API backend for competitive mobile esports tournament hub",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "keywords": [
+    "booyahx",
+    "esports",
+    "tournament",
+    "express",
+    "rest-api"
+  ],
+  "author": "BooyahX",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
