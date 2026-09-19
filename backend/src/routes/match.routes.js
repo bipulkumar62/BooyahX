@@ -1,16 +1,21 @@
 /**
  * BooyahX — Match Routes
  *
- * Future endpoints:
- *   GET /api/matches       — List all matches for a player
- *   GET /api/matches/:id   — Get match detail
+ *   GET /api/matches       — List matches (supports ?playerId=xxx)
+ *   GET /api/matches/:id   — Get match by ID
+ *   POST /api/matches      — Create match
  */
 
 const express = require('express');
 const router = express.Router();
-const { getMatches, getMatchById } = require('../controllers/match.controller');
+const {
+  getMatches,
+  getMatchById,
+  createMatch,
+} = require('../controllers/match.controller');
 
 router.get('/', getMatches);
 router.get('/:id', getMatchById);
+router.post('/', createMatch);
 
 module.exports = router;

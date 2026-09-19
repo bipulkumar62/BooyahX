@@ -1,21 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:booyahx/core/models/player_profile.dart';
+import 'package:booyahx/services/api_service.dart';
 
 /// BooyahX — Player Profile State
 ///
 /// Manages the current player's profile data using Riverpod.
-/// This is a local-only state abstraction. When the backend is added,
-/// this provider will be replaced with an async provider that fetches
-/// from the API, but the UI consumers won't need to change.
+/// Syncs with the backend API when available.
 class PlayerProfileNotifier extends StateNotifier<PlayerProfile?> {
   PlayerProfileNotifier() : super(null);
 
+  final _api = ApiService.instance;
+
   /// Set the player profile after onboarding.
-  void setProfile({required String inGameName, required String freeFireUid}) {
-    state = PlayerProfile(
-      inGameName: inGameName,
-      freeFireUid: freeFireUid,
-    );
+  /// Creates the player on the backend if possible.
+  Future<void> setProfile({
+    required String inGameName,
+    required String freeFireUid,
+  }) async {
+    try {
+      // Try to create/fetch player on backend
+      final data = await _api.createPlayer(
+        inGameName: inGameName,
+        freeFireUid: freeFireUid,
+      );
+      state = PlayerProfile.fromJson(data);
+    } catch (e) {
+      // If backend is unreachable, save locally
+      state = PlayerProfile(
+        inGameName: inGameName,
+        freeFireUid: freeFireUid,
+      );
+    }
   }
 
   /// Clear the player profile (e.g., on logout).
@@ -33,13 +48,19 @@ class PlayerProfileNotifier extends StateNotifier<PlayerProfile?> {
       inGameName: inGameName,
       freeFireUid: freeFireUid,
     );
+
+    // Sync with backend if we have an ID
+    if (state!.id != null) {
+      _api.updatePlayer(
+        state!.id!,
+        inGameName: inGameName,
+        freeFireUid: freeFireUid,
+      );
+    }
   }
 }
 
 /// Provider for the player profile state.
-///
-/// Reads: `ref.watch(playerProfileProvider)`
-/// Updates: `ref.read(playerProfileProvider.notifier).setProfile(...)`
 final playerProfileProvider =
     StateNotifierProvider<PlayerProfileNotifier, PlayerProfile?>(
   (ref) => PlayerProfileNotifier(),

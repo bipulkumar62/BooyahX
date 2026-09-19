@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:booyahx/core/theme/app_colors.dart';
 import 'package:booyahx/core/theme/app_text_styles.dart';
 import 'package:booyahx/core/constants/app_dimensions.dart';
 import 'package:booyahx/core/models/tournament.dart';
 import 'package:booyahx/core/data/mock_tournaments.dart';
+import 'package:booyahx/core/providers/player_profile_provider.dart';
+import 'package:booyahx/services/api_service.dart';
 import 'package:booyahx/shared/widgets/widgets.dart';
 
 /// BooyahX — Tournament Details Screen
@@ -12,7 +15,7 @@ import 'package:booyahx/shared/widgets/widgets.dart';
 /// Displays full tournament information with three tabs:
 /// Prize Pool, Players, and Rules.
 /// Receives a tournament ID from the route and loads mock data.
-class TournamentDetailsScreen extends StatefulWidget {
+class TournamentDetailsScreen extends ConsumerStatefulWidget {
   final String tournamentId;
 
   const TournamentDetailsScreen({
@@ -21,10 +24,10 @@ class TournamentDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<TournamentDetailsScreen> createState() => _TournamentDetailsScreenState();
+  ConsumerState<TournamentDetailsScreen> createState() => _TournamentDetailsScreenState();
 }
 
-class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
+class _TournamentDetailsScreenState extends ConsumerState<TournamentDetailsScreen> {
   // ── State ──
   _ScreenStatus _status = _ScreenStatus.loading;
   TournamentDetail? _detail;
@@ -38,24 +41,129 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   }
 
   Future<void> _loadTournament() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
     if (!mounted) return;
 
-    final detail = MockTournamentData.detailById(widget.tournamentId);
+    try {
+      // Try fetching from API
+      final data = await ApiService.instance.getTournament(widget.tournamentId);
+      if (!mounted) return;
 
-    if (detail == null) {
+      final tournament = _fromApi(data);
+
+      // Build TournamentDetail from API data
+      final prizeDistribution = (data['prizeDistribution'] as List<dynamic>?)
+              ?.map((p) => PrizeDistribution(
+                    title: p['position'] ?? '',
+                    amount: p['prize'] ?? '',
+                  ))
+              .toList() ??
+          [];
+
+      final rules = (data['rules'] as List<dynamic>?)
+              ?.map((r) => TournamentRule(
+                    number: 0,
+                    title: r['title'] ?? '',
+                    description: r['description'] ?? '',
+                  ))
+              .toList() ??
+          [];
+
+      final detail = TournamentDetail(
+        tournament: tournament,
+        prizeDistribution: prizeDistribution,
+        players: [],
+        rules: rules,
+        hasJoined: false,
+      );
+
+      if (!mounted) return;
+
       setState(() {
-        _status = _ScreenStatus.error;
+        _detail = detail;
+        _hasJoined = detail.hasJoined;
+        _status = _ScreenStatus.normal;
       });
-      return;
-    }
+    } catch (e) {
+      // Fallback to mock data if API fails
+      if (!mounted) return;
 
-    setState(() {
-      _detail = detail;
-      _hasJoined = detail.hasJoined;
-      _status = _ScreenStatus.normal;
-    });
+      final detail = MockTournamentData.detailById(widget.tournamentId);
+
+      if (detail == null) {
+        setState(() {
+          _status = _ScreenStatus.error;
+        });
+        return;
+      }
+
+      setState(() {
+        _detail = detail;
+        _hasJoined = detail.hasJoined;
+        _status = _ScreenStatus.normal;
+      });
+    }
+  }
+
+  /// Convert API JSON to Tournament model.
+  Tournament _fromApi(Map<String, dynamic> json) {
+    return Tournament(
+      id: json['_id'] ?? json['id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'],
+      mode: json['mode'] ?? '',
+      map: json['map'] ?? '',
+      dateTime: json['dateTime'] != null
+          ? DateTime.tryParse(json['dateTime'])?.toLocal().toString()
+          : null,
+      prizePool: json['prizePool'],
+      perKill: json['perKill'],
+      entryFee: json['entryFee'],
+      totalSlots: json['totalSlots'],
+      filledSlots: json['filledSlots'],
+      status: _parseStatus(json['status']),
+      statusLabel: _statusLabel(json['status']),
+      imageUrl: json['imageUrl'],
+      category: _parseCategory(json['category']),
+      isFeatured: json['isFeatured'] ?? false,
+    );
+  }
+
+  TournamentStatus _parseStatus(String? status) {
+    return switch (status) {
+      'open' => TournamentStatus.open,
+      'registrationOpen' => TournamentStatus.registrationOpen,
+      'almostFull' => TournamentStatus.almostFull,
+      'closingSoon' => TournamentStatus.closingSoon,
+      'full' => TournamentStatus.full,
+      'live' => TournamentStatus.live,
+      'completed' => TournamentStatus.completed,
+      'cancelled' => TournamentStatus.cancelled,
+      _ => TournamentStatus.open,
+    };
+  }
+
+  String _statusLabel(String? status) {
+    return switch (status) {
+      'open' => 'Open',
+      'registrationOpen' => 'Registration Open',
+      'almostFull' => 'Almost Full',
+      'closingSoon' => 'Closing Soon',
+      'full' => 'Full',
+      'live' => 'Live',
+      'completed' => 'Completed',
+      'cancelled' => 'Cancelled',
+      _ => 'Open',
+    };
+  }
+
+  TournamentCategory _parseCategory(String? category) {
+    return switch (category) {
+      'soloBr' => TournamentCategory.soloBr,
+      'duoBr' => TournamentCategory.duoBr,
+      'duoPerKill' => TournamentCategory.duoPerKill,
+      'soloPerKill' => TournamentCategory.soloPerKill,
+      _ => TournamentCategory.all,
+    };
   }
 
   void _onJoinTap() {
@@ -211,15 +319,25 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     );
   }
 
-  void _confirmJoin() {
-    // Simulate successful join — no backend call
+  void _confirmJoin() async {
+    final t = _detail?.tournament;
+    final playerId = ref.read(playerProfileProvider)?.id;
+
+    // Try to join via API
+    if (playerId != null && t != null) {
+      try {
+        await ApiService.instance.joinTournament(t.id, playerId);
+      } catch (e) {
+        // Continue with local state even if API fails
+      }
+    }
+
     setState(() {
       _hasJoined = true;
     });
 
     if (!mounted) return;
 
-    final t = _detail?.tournament;
     final slotNumber = (t?.filledSlots ?? 0) + 1;
 
     showDialog(

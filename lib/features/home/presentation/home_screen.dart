@@ -8,6 +8,7 @@ import 'package:booyahx/core/constants/app_routes.dart';
 import 'package:booyahx/core/models/tournament.dart';
 import 'package:booyahx/core/data/mock_tournaments.dart';
 import 'package:booyahx/core/providers/player_profile_provider.dart';
+import 'package:booyahx/services/api_service.dart';
 import 'package:booyahx/shared/widgets/widgets.dart';
 
 /// BooyahX — Home Screen (Tournament Hub)
@@ -26,6 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   TournamentCategory _selectedCategory = TournamentCategory.soloBr;
   _ScreenStatus _screenStatus = _ScreenStatus.loading;
   List<Tournament> _tournaments = [];
+  Tournament _featuredBanner = MockTournamentData.featuredBanner;
 
   @override
   void initState() {
@@ -36,15 +38,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // ── Data Loading ──
 
   Future<void> _loadTournaments() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 800));
-
     if (!mounted) return;
 
-    setState(() {
-      _tournaments = MockTournamentData.byCategory(_selectedCategory);
-      _screenStatus = _ScreenStatus.normal;
-    });
+    try {
+      final data = await ApiService.instance.getTournaments();
+      if (!mounted) return;
+
+      final tournaments = data.map((json) => _fromApi(json)).toList();
+
+      // Separate featured and regular tournaments
+      final featured = tournaments.where((t) => t.isFeatured).toList();
+      if (featured.isNotEmpty) {
+        _featuredBanner = featured.first;
+      }
+
+      setState(() {
+        _tournaments = _filterByCategory(tournaments, _selectedCategory);
+        _screenStatus = _tournaments.isEmpty
+            ? _ScreenStatus.empty
+            : _ScreenStatus.normal;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      // Fallback to mock data if API fails
+      setState(() {
+        _tournaments = MockTournamentData.byCategory(_selectedCategory);
+        _featuredBanner = MockTournamentData.featuredBanner;
+        _screenStatus = _ScreenStatus.normal;
+      });
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -52,14 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _screenStatus = _ScreenStatus.loading;
     });
 
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    if (!mounted) return;
-
-    setState(() {
-      _tournaments = MockTournamentData.byCategory(_selectedCategory);
-      _screenStatus = _ScreenStatus.normal;
-    });
+    await _loadTournaments();
   }
 
   void _onCategoryChanged(TournamentCategory category) {
@@ -76,6 +91,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _screenStatus = _ScreenStatus.loading;
     });
     _loadTournaments();
+  }
+
+  /// Convert API JSON to Tournament model.
+  Tournament _fromApi(Map<String, dynamic> json) {
+    return Tournament(
+      id: json['_id'] ?? json['id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'],
+      mode: json['mode'] ?? '',
+      map: json['map'] ?? '',
+      dateTime: json['dateTime'] != null
+          ? DateTime.tryParse(json['dateTime'])?.toLocal().toString()
+          : null,
+      prizePool: json['prizePool'],
+      perKill: json['perKill'],
+      entryFee: json['entryFee'],
+      totalSlots: json['totalSlots'],
+      filledSlots: json['filledSlots'],
+      status: _parseStatus(json['status']),
+      statusLabel: _statusLabel(json['status']),
+      imageUrl: json['imageUrl'],
+      category: _parseCategory(json['category']),
+      isFeatured: json['isFeatured'] ?? false,
+    );
+  }
+
+  TournamentStatus _parseStatus(String? status) {
+    return switch (status) {
+      'open' => TournamentStatus.open,
+      'registrationOpen' => TournamentStatus.registrationOpen,
+      'almostFull' => TournamentStatus.almostFull,
+      'closingSoon' => TournamentStatus.closingSoon,
+      'full' => TournamentStatus.full,
+      'live' => TournamentStatus.live,
+      'completed' => TournamentStatus.completed,
+      'cancelled' => TournamentStatus.cancelled,
+      _ => TournamentStatus.open,
+    };
+  }
+
+  String _statusLabel(String? status) {
+    return switch (status) {
+      'open' => 'Open',
+      'registrationOpen' => 'Registration Open',
+      'almostFull' => 'Almost Full',
+      'closingSoon' => 'Closing Soon',
+      'full' => 'Full',
+      'live' => 'Live',
+      'completed' => 'Completed',
+      'cancelled' => 'Cancelled',
+      _ => 'Open',
+    };
+  }
+
+  TournamentCategory _parseCategory(String? category) {
+    return switch (category) {
+      'soloBr' => TournamentCategory.soloBr,
+      'duoBr' => TournamentCategory.duoBr,
+      'duoPerKill' => TournamentCategory.duoPerKill,
+      'soloPerKill' => TournamentCategory.soloPerKill,
+      _ => TournamentCategory.all,
+    };
+  }
+
+  List<Tournament> _filterByCategory(
+      List<Tournament> tournaments, TournamentCategory category) {
+    if (category == TournamentCategory.all) return tournaments;
+    return tournaments.where((t) => t.category == category).toList();
   }
 
   // ── Build ──
@@ -128,7 +211,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 AppDimensions.gutter,
                 AppDimensions.spaceMd,
               ),
-              child: _FlashBanner(tournament: MockTournamentData.featuredBanner),
+              child: _FlashBanner(tournament: _featuredBanner),
             ),
           ),
 
@@ -263,7 +346,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return BooyahXEmptyState(
       icon: Icons.sports_esports_outlined,
       title: 'No tournaments available',
-      subtitle: 'No ${MockTournamentData.categoryLabels[_selectedCategory] ?? ''} tournaments found right now. Check back soon!',
+      subtitle: 'No tournaments found right now. Check back soon!',
       actionLabel: 'Refresh',
       onAction: _onRefresh,
     );

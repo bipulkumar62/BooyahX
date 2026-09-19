@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:booyahx/core/theme/app_colors.dart';
 import 'package:booyahx/core/theme/app_text_styles.dart';
@@ -6,20 +7,22 @@ import 'package:booyahx/core/constants/app_dimensions.dart';
 import 'package:booyahx/core/constants/app_routes.dart';
 import 'package:booyahx/core/models/match.dart';
 import 'package:booyahx/core/data/mock_matches.dart';
+import 'package:booyahx/core/providers/player_profile_provider.dart';
+import 'package:booyahx/services/api_service.dart';
 import 'package:booyahx/shared/widgets/widgets.dart';
 
 /// BooyahX — My Matches Screen
 ///
 /// Three-tab view: Upcoming, Live, Played.
 /// Each tab shows match cards that navigate to Match Details.
-class MyMatchesScreen extends StatefulWidget {
+class MyMatchesScreen extends ConsumerStatefulWidget {
   const MyMatchesScreen({super.key});
 
   @override
-  State<MyMatchesScreen> createState() => _MyMatchesScreenState();
+  ConsumerState<MyMatchesScreen> createState() => _MyMatchesScreenState();
 }
 
-class _MyMatchesScreenState extends State<MyMatchesScreen> {
+class _MyMatchesScreenState extends ConsumerState<MyMatchesScreen> {
   _ScreenStatus _status = _ScreenStatus.loading;
   int _selectedTab = 0;
 
@@ -34,15 +37,74 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
   }
 
   Future<void> _loadMatches() async {
-    await Future.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
 
-    setState(() {
-      _upcoming = MockMatchData.upcoming;
-      _live = MockMatchData.live;
-      _played = MockMatchData.played;
-      _status = _ScreenStatus.normal;
-    });
+    try {
+      final playerId = ref.read(playerProfileProvider)?.id;
+      final data = await ApiService.instance.getMatches(playerId: playerId);
+      if (!mounted) return;
+
+      final allMatches = data.map((json) => _fromApi(json)).toList();
+
+      setState(() {
+        _upcoming = allMatches.where((m) => m.status == MatchStatus.upcoming).toList();
+        _live = allMatches.where((m) => m.status == MatchStatus.live).toList();
+        _played = allMatches.where((m) =>
+            m.status == MatchStatus.completed ||
+            m.status == MatchStatus.resultPending).toList();
+        _status = _ScreenStatus.normal;
+      });
+    } catch (e) {
+      // Fallback to mock data if API fails
+      if (!mounted) return;
+      setState(() {
+        _upcoming = MockMatchData.upcoming;
+        _live = MockMatchData.live;
+        _played = MockMatchData.played;
+        _status = _ScreenStatus.normal;
+      });
+    }
+  }
+
+  MatchData _fromApi(Map<String, dynamic> json) {
+    return MatchData(
+      id: json['_id'] ?? json['id'] ?? '',
+      tournamentId: json['tournamentId'] ?? '',
+      tournamentName: json['tournamentName'] ?? '',
+      mode: json['mode'] ?? '',
+      map: json['map'] ?? '',
+      matchDateTime: DateTime.tryParse(json['matchDateTime'] ?? '') ?? DateTime.now(),
+      entryFee: json['entryFee'] ?? '₹0',
+      prizePool: json['prizePool'] ?? '₹0',
+      status: _parseMatchStatus(json['status']),
+      statusLabel: json['status'],
+      imageUrl: json['imageUrl'],
+      slotNumber: json['slotNumber'],
+      playerStatus: json['playerStatus'],
+      roomReleaseTime: json['roomReleaseTime'] != null
+          ? DateTime.tryParse(json['roomReleaseTime'])
+          : null,
+      roomCredentials: (json['roomId'] != null && json['roomId'] != '')
+          ? RoomCredentials(
+              roomId: json['roomId'] ?? '',
+              roomPassword: json['roomPassword'] ?? '',
+              releaseTime: json['roomReleaseTime'] != null
+                  ? DateTime.tryParse(json['roomReleaseTime'])
+                  : null,
+            )
+          : null,
+    );
+  }
+
+  MatchStatus _parseMatchStatus(String? status) {
+    return switch (status) {
+      'upcoming' => MatchStatus.upcoming,
+      'live' => MatchStatus.live,
+      'completed' => MatchStatus.completed,
+      'cancelled' => MatchStatus.cancelled,
+      'resultPending' => MatchStatus.resultPending,
+      _ => MatchStatus.upcoming,
+    };
   }
 
   void _onMatchTap(String matchId) {

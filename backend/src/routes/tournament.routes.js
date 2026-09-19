@@ -1,10 +1,10 @@
 /**
  * BooyahX — Tournament Routes
  *
- * Future endpoints:
  *   GET    /api/tournaments          — List all tournaments
- *   GET    /api/tournaments/:id      — Get tournament detail
- *   POST   /api/tournaments/:id/join — Join a tournament
+ *   GET    /api/tournaments/:id      — Get tournament by ID
+ *   POST   /api/tournaments          — Create tournament
+ *   POST   /api/tournaments/:id/join — Join tournament
  */
 
 const express = require('express');
@@ -12,11 +12,13 @@ const router = express.Router();
 const {
   getTournaments,
   getTournamentById,
+  createTournament,
   joinTournament,
 } = require('../controllers/tournament.controller');
 
 router.get('/', getTournaments);
 router.get('/:id', getTournamentById);
+router.post('/', createTournament);
 router.post('/:id/join', joinTournament);
 
 module.exports = router;
