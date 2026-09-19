@@ -98,9 +98,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Tournament(
       id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? '',
+      game: json['game'] ?? 'Free Fire',
       description: json['description'],
-      mode: json['mode'] ?? '',
-      map: json['map'] ?? '',
+      mode: json['mode'] ?? 'SOLO BR',
+      map: json['map'] ?? 'Bermuda',
       dateTime: json['dateTime'] != null
           ? DateTime.tryParse(json['dateTime'])?.toLocal().toString()
           : null,
@@ -119,6 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   TournamentStatus _parseStatus(String? status) {
     return switch (status) {
+      'upcoming' => TournamentStatus.upcoming,
       'open' => TournamentStatus.open,
       'registrationOpen' => TournamentStatus.registrationOpen,
       'almostFull' => TournamentStatus.almostFull,
@@ -133,6 +135,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   String _statusLabel(String? status) {
     return switch (status) {
+      'upcoming' => 'Upcoming',
       'open' => 'Open',
       'registrationOpen' => 'Registration Open',
       'almostFull' => 'Almost Full',
@@ -176,6 +179,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         notificationCount: 3,
         showProfileAvatar: true,
         titleWidget: _HomeAppBarTitle(ign: playerProfile?.inGameName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+            tooltip: 'Create Tournament',
+            onPressed: () async {
+              final result = await context.push<bool>(AppRoutes.createTournamentPath);
+              if (result == true && mounted) {
+                _onRefresh();
+              }
+            },
+          ),
+        ],
       ),
       body: _buildBody(),
     );

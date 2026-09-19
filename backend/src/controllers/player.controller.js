@@ -39,22 +39,23 @@ async function getPlayer(req, res) {
 /**
  * POST /api/players
  * Create a new player (onboarding).
+ * Body: { name, inGameName, uid }
  */
 async function createPlayer(req, res) {
   try {
-    const { inGameName, freeFireUid } = req.body;
+    const { name, inGameName, uid } = req.body;
 
-    if (!inGameName || !freeFireUid) {
-      return sendError(res, 'inGameName and freeFireUid are required', 400);
+    if (!name || !inGameName || !uid) {
+      return sendError(res, 'name, inGameName, and uid are required', 400);
     }
 
     // Check if player with this UID already exists
-    const existing = await Player.findOne({ freeFireUid });
+    const existing = await Player.findOne({ uid });
     if (existing) {
       return sendSuccess(res, 'Player already exists', existing);
     }
 
-    const player = await Player.create({ inGameName, freeFireUid });
+    const player = await Player.create({ name, inGameName, uid });
     return sendSuccess(res, 'Player created successfully', player, 201);
   } catch (error) {
     if (error.name === 'ValidationError') {
@@ -71,10 +72,11 @@ async function createPlayer(req, res) {
  */
 async function updatePlayer(req, res) {
   try {
-    const { inGameName, freeFireUid } = req.body;
+    const { name, inGameName, uid } = req.body;
     const update = {};
+    if (name) update.name = name;
     if (inGameName) update.inGameName = inGameName;
-    if (freeFireUid) update.freeFireUid = freeFireUid;
+    if (uid) update.uid = uid;
 
     const player = await Player.findByIdAndUpdate(req.params.id, update, {
       new: true,

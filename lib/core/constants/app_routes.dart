@@ -19,6 +19,7 @@ abstract final class AppRoutes {
   static const matchDetail = 'match-detail';
   static const wallet = 'wallet';
   static const roomDetails = 'room-details';
+  static const createTournament = 'create-tournament';
   static const showcase = 'showcase';
 
   // ──────────────────────────────────────────────
@@ -38,6 +39,7 @@ abstract final class AppRoutes {
   static const matchDetailPath = '/match/:id';
   static const walletPath = '/wallet';
   static const roomDetailsPath = '/room-details/:matchId';
+  static const createTournamentPath = '/create-tournament';
   static const showcasePath = '/showcase';
 
   // ──────────────────────────────────────────────

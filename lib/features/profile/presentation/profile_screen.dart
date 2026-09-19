@@ -41,8 +41,9 @@ class ProfileScreen extends ConsumerWidget {
             // ── Profile Header ──
             SliverToBoxAdapter(
               child: _ProfileHeader(
+                name: profile?.name ?? 'Player',
                 ign: profile?.inGameName ?? 'Player',
-                uid: profile?.freeFireUid ?? '000000',
+                uid: profile?.uid ?? '000000',
                 onEdit: () => _showEditProfile(context, ref),
               ),
             ),
@@ -94,12 +95,14 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       title: 'Edit Profile',
       child: _EditProfileForm(
+        initialName: profile?.name ?? '',
         initialIgn: profile?.inGameName ?? '',
-        initialUid: profile?.freeFireUid ?? '',
-        onSave: (ign, uid) {
+        initialUid: profile?.uid ?? '',
+        onSave: (name, ign, uid) {
           ref.read(playerProfileProvider.notifier).updateProfile(
+                name: name,
                 inGameName: ign,
-                freeFireUid: uid,
+                uid: uid,
               );
           Navigator.of(context).pop();
         },
@@ -114,11 +117,13 @@ class ProfileScreen extends ConsumerWidget {
 
 /// Profile header with avatar, name, UID, and edit button.
 class _ProfileHeader extends StatelessWidget {
+  final String name;
   final String ign;
   final String uid;
   final VoidCallback onEdit;
 
   const _ProfileHeader({
+    required this.name,
     required this.ign,
     required this.uid,
     required this.onEdit,
@@ -173,18 +178,31 @@ class _ProfileHeader extends StatelessWidget {
 
             // Avatar
             BooyahXAvatar(
-              initials: ign.isNotEmpty ? ign[0].toUpperCase() : '?',
+              initials: name.isNotEmpty ? name[0].toUpperCase() : '?',
               size: AvatarSize.xl,
               backgroundColor: AppColors.primary,
               borderColor: AppColors.primaryFixed,
             ),
             const SizedBox(height: AppDimensions.spaceLg),
 
+            // Player Name
+            Text(
+              name,
+              style: AppTextStyles.headlineLg.copyWith(
+                color: AppColors.onSurface,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: AppDimensions.spaceXs),
+
             // IGN
             Text(
               ign,
-              style: AppTextStyles.headlineLg.copyWith(
-                color: AppColors.onSurface,
+              style: AppTextStyles.bodySm.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -771,11 +789,13 @@ class _AboutSection extends StatelessWidget {
 // ══════════════════════════════════════════════════════════
 
 class _EditProfileForm extends StatefulWidget {
+  final String initialName;
   final String initialIgn;
   final String initialUid;
-  final void Function(String ign, String uid) onSave;
+  final void Function(String name, String ign, String uid) onSave;
 
   const _EditProfileForm({
+    required this.initialName,
     required this.initialIgn,
     required this.initialUid,
     required this.onSave,
@@ -786,6 +806,7 @@ class _EditProfileForm extends StatefulWidget {
 }
 
 class _EditProfileFormState extends State<_EditProfileForm> {
+  late final TextEditingController _nameController;
   late final TextEditingController _ignController;
   late final TextEditingController _uidController;
   final _formKey = GlobalKey<FormState>();
@@ -793,12 +814,14 @@ class _EditProfileFormState extends State<_EditProfileForm> {
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController(text: widget.initialName);
     _ignController = TextEditingController(text: widget.initialIgn);
     _uidController = TextEditingController(text: widget.initialUid);
   }
 
   @override
   void dispose() {
+    _nameController.dispose();
     _ignController.dispose();
     _uidController.dispose();
     super.dispose();
@@ -806,9 +829,10 @@ class _EditProfileFormState extends State<_EditProfileForm> {
 
   void _handleSave() {
     if (_formKey.currentState?.validate() ?? false) {
+      final name = _nameController.text.trim();
       final ign = _ignController.text.trim();
       final uid = _uidController.text.trim();
-      widget.onSave(ign, uid);
+      widget.onSave(name, ign, uid);
     }
   }
 
@@ -820,6 +844,22 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          BooyahXTextField(
+            label: 'Player Name',
+            hintText: 'Enter your name',
+            controller: _nameController,
+            textInputAction: TextInputAction.next,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Name cannot be empty';
+              }
+              if (value.trim().length < 2) {
+                return 'Name must be at least 2 characters';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: AppDimensions.spaceLg),
           BooyahXTextField(
             label: 'In-Game Name',
             hintText: 'Enter your IGN',

@@ -139,12 +139,14 @@ class ApiService {
 
   /// Create a new player (onboarding).
   Future<Map<String, dynamic>> createPlayer({
+    required String name,
     required String inGameName,
-    required String freeFireUid,
+    required String uid,
   }) async {
     final response = await post('/api/players', body: {
+      'name': name,
       'inGameName': inGameName,
-      'freeFireUid': freeFireUid,
+      'uid': uid,
     });
     return response['data'] as Map<String, dynamic>;
   }
@@ -152,12 +154,14 @@ class ApiService {
   /// Update a player profile.
   Future<Map<String, dynamic>> updatePlayer(
     String id, {
+    String? name,
     String? inGameName,
-    String? freeFireUid,
+    String? uid,
   }) async {
     final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
     if (inGameName != null) body['inGameName'] = inGameName;
-    if (freeFireUid != null) body['freeFireUid'] = freeFireUid;
+    if (uid != null) body['uid'] = uid;
 
     final response = await put('/api/players/$id', body: body);
     return response['data'] as Map<String, dynamic>;

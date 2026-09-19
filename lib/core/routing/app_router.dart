@@ -10,6 +10,7 @@ import 'package:booyahx/features/leaderboard/presentation/leaderboard_screen.dar
 import 'package:booyahx/features/notifications/presentation/notifications_screen.dart';
 import 'package:booyahx/features/profile/presentation/profile_screen.dart';
 import 'package:booyahx/features/tournaments/presentation/tournament_details_screen.dart';
+import 'package:booyahx/features/tournaments/presentation/create_tournament_screen.dart';
 import 'package:booyahx/features/matches/presentation/match_details_screen.dart';
 import 'package:booyahx/features/wallet/presentation/wallet_screen.dart';
 import 'package:booyahx/features/matches/presentation/room_details_screen.dart';
@@ -110,6 +111,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.walletPath,
       name: AppRoutes.wallet,
       builder: (context, state) => const WalletScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.createTournamentPath,
+      name: AppRoutes.createTournament,
+      builder: (context, state) => const CreateTournamentScreen(),
     ),
     GoRoute(
       path: AppRoutes.roomDetailsPath,

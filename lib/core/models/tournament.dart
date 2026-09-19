@@ -12,6 +12,7 @@ enum TournamentCategory {
 }
 
 enum TournamentStatus {
+  upcoming,
   open,
   registrationOpen,
   almostFull,
@@ -26,6 +27,7 @@ enum TournamentStatus {
 class Tournament {
   final String id;
   final String name;
+  final String game;
   final String? description;
   final String mode;
   final String map;
@@ -49,6 +51,7 @@ class Tournament {
   const Tournament({
     required this.id,
     required this.name,
+    this.game = 'Free Fire',
     this.description,
     required this.mode,
     required this.map,
@@ -94,7 +97,7 @@ class Tournament {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'Tournament(id: $id, name: $name, category: $category)';
+  String toString() => 'Tournament(id: $id, name: $name, game: $game, category: $category)';
 }
 
 // ══════════════════════════════════════════════════════════

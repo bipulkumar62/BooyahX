@@ -5,21 +5,24 @@
 class PlayerProfile {
   /// Backend MongoDB ID. Null when created locally before API sync.
   final String? id;
+  final String name;
   final String inGameName;
-  final String freeFireUid;
+  final String uid;
 
   const PlayerProfile({
     this.id,
+    required this.name,
     required this.inGameName,
-    required this.freeFireUid,
+    required this.uid,
   });
 
   /// Create from API JSON response.
   factory PlayerProfile.fromJson(Map<String, dynamic> json) {
     return PlayerProfile(
       id: json['_id']?.toString(),
+      name: json['name'] as String? ?? '',
       inGameName: json['inGameName'] as String? ?? '',
-      freeFireUid: json['freeFireUid'] as String? ?? '',
+      uid: json['uid'] as String? ?? '',
     );
   }
 
@@ -27,21 +30,24 @@ class PlayerProfile {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) '_id': id,
+      'name': name,
       'inGameName': inGameName,
-      'freeFireUid': freeFireUid,
+      'uid': uid,
     };
   }
 
   /// Create a copy with optional overrides.
   PlayerProfile copyWith({
     String? id,
+    String? name,
     String? inGameName,
-    String? freeFireUid,
+    String? uid,
   }) {
     return PlayerProfile(
       id: id ?? this.id,
+      name: name ?? this.name,
       inGameName: inGameName ?? this.inGameName,
-      freeFireUid: freeFireUid ?? this.freeFireUid,
+      uid: uid ?? this.uid,
     );
   }
 
@@ -50,14 +56,15 @@ class PlayerProfile {
     if (identical(this, other)) return true;
     return other is PlayerProfile &&
         other.id == id &&
+        other.name == name &&
         other.inGameName == inGameName &&
-        other.freeFireUid == freeFireUid;
+        other.uid == uid;
   }
 
   @override
-  int get hashCode => id.hashCode ^ inGameName.hashCode ^ freeFireUid.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ inGameName.hashCode ^ uid.hashCode;
 
   @override
   String toString() =>
-      'PlayerProfile(id: $id, inGameName: $inGameName, freeFireUid: $freeFireUid)';
+      'PlayerProfile(id: $id, name: $name, inGameName: $inGameName, uid: $uid)';
 }

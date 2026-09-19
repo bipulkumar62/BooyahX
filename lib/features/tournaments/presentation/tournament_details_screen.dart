@@ -109,9 +109,10 @@ class _TournamentDetailsScreenState extends ConsumerState<TournamentDetailsScree
     return Tournament(
       id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? '',
+      game: json['game'] ?? 'Free Fire',
       description: json['description'],
-      mode: json['mode'] ?? '',
-      map: json['map'] ?? '',
+      mode: json['mode'] ?? 'SOLO BR',
+      map: json['map'] ?? 'Bermuda',
       dateTime: json['dateTime'] != null
           ? DateTime.tryParse(json['dateTime'])?.toLocal().toString()
           : null,
@@ -130,6 +131,7 @@ class _TournamentDetailsScreenState extends ConsumerState<TournamentDetailsScree
 
   TournamentStatus _parseStatus(String? status) {
     return switch (status) {
+      'upcoming' => TournamentStatus.upcoming,
       'open' => TournamentStatus.open,
       'registrationOpen' => TournamentStatus.registrationOpen,
       'almostFull' => TournamentStatus.almostFull,
@@ -144,6 +146,7 @@ class _TournamentDetailsScreenState extends ConsumerState<TournamentDetailsScree
 
   String _statusLabel(String? status) {
     return switch (status) {
+      'upcoming' => 'Upcoming',
       'open' => 'Open',
       'registrationOpen' => 'Registration Open',
       'almostFull' => 'Almost Full',
@@ -177,6 +180,7 @@ class _TournamentDetailsScreenState extends ConsumerState<TournamentDetailsScree
         t.status == TournamentStatus.live ||
         t.status == TournamentStatus.completed ||
         t.status == TournamentStatus.cancelled ||
+        t.status == TournamentStatus.upcoming ||
         _hasJoined) {
       return;
     }

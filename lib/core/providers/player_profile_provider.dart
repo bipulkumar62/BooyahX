@@ -14,21 +14,24 @@ class PlayerProfileNotifier extends StateNotifier<PlayerProfile?> {
   /// Set the player profile after onboarding.
   /// Creates the player on the backend if possible.
   Future<void> setProfile({
+    required String name,
     required String inGameName,
-    required String freeFireUid,
+    required String uid,
   }) async {
     try {
       // Try to create/fetch player on backend
       final data = await _api.createPlayer(
+        name: name,
         inGameName: inGameName,
-        freeFireUid: freeFireUid,
+        uid: uid,
       );
       state = PlayerProfile.fromJson(data);
     } catch (e) {
       // If backend is unreachable, save locally
       state = PlayerProfile(
+        name: name,
         inGameName: inGameName,
-        freeFireUid: freeFireUid,
+        uid: uid,
       );
     }
   }
@@ -40,21 +43,24 @@ class PlayerProfileNotifier extends StateNotifier<PlayerProfile?> {
 
   /// Update specific fields.
   void updateProfile({
+    String? name,
     String? inGameName,
-    String? freeFireUid,
+    String? uid,
   }) {
     if (state == null) return;
     state = state!.copyWith(
+      name: name,
       inGameName: inGameName,
-      freeFireUid: freeFireUid,
+      uid: uid,
     );
 
     // Sync with backend if we have an ID
     if (state!.id != null) {
       _api.updatePlayer(
         state!.id!,
+        name: name,
         inGameName: inGameName,
-        freeFireUid: freeFireUid,
+        uid: uid,
       );
     }
   }

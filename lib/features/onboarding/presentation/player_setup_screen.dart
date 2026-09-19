@@ -12,8 +12,8 @@ import 'package:booyahx/shared/widgets/buttons/booyahx_button.dart';
 
 /// BooyahX — Player Setup Screen (Onboarding)
 ///
-/// Collects the player's In-Game Name and Free Fire UID.
-/// No authentication, no backend — just local state.
+/// Collects the player's Name, In-Game Name, and Free Fire UID.
+/// No authentication — just local state + backend sync.
 class PlayerSetupScreen extends ConsumerStatefulWidget {
   const PlayerSetupScreen({super.key});
 
@@ -23,28 +23,46 @@ class PlayerSetupScreen extends ConsumerStatefulWidget {
 
 class _PlayerSetupScreenState extends ConsumerState<PlayerSetupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _ignController = TextEditingController();
   final _uidController = TextEditingController();
+  final _nameFocusNode = FocusNode();
   final _ignFocusNode = FocusNode();
   final _uidFocusNode = FocusNode();
 
   bool _isSubmitting = false;
+  String? _errorMessage;
 
   // ── Validation Constants ──
+  static const int _maxNameLength = 50;
   static const int _maxIgnLength = 20;
   static const int _minUidLength = 6;
   static const int _maxUidLength = 12;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _ignController.dispose();
     _uidController.dispose();
+    _nameFocusNode.dispose();
     _ignFocusNode.dispose();
     _uidFocusNode.dispose();
     super.dispose();
   }
 
   // ── Validators ──
+
+  String? _validateName(String? value) {
+    if (value == null) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return 'Please enter your name';
+    }
+    if (trimmed.length > _maxNameLength) {
+      return 'Name must be $_maxNameLength characters or less';
+    }
+    return null;
+  }
 
   String? _validateIgn(String? value) {
     if (value == null) return null;
@@ -82,27 +100,32 @@ class _PlayerSetupScreenState extends ConsumerState<PlayerSetupScreen> {
     // Validate form
     if (!_formKey.currentState!.validate()) return;
 
+    final name = _nameController.text.trim();
     final ign = _ignController.text.trim();
     final uid = _uidController.text.trim();
 
-    // Double-check (shouldn't reach here if validation fails)
-    if (ign.isEmpty || uid.isEmpty) return;
+    // Double-check
+    if (name.isEmpty || ign.isEmpty || uid.isEmpty) return;
+    if (name.length > _maxNameLength) return;
     if (ign.length > _maxIgnLength) return;
     if (uid.length < _minUidLength || uid.length > _maxUidLength) return;
     if (!RegExp(r'^\d+$').hasMatch(uid)) return;
 
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+    });
 
-    // Small delay to simulate processing
-    await Future.delayed(const Duration(milliseconds: 300));
+    // Save profile to Riverpod state (syncs with backend)
+    await ref.read(playerProfileProvider.notifier).setProfile(
+          name: name,
+          inGameName: ign,
+          uid: uid,
+        );
 
     if (!mounted) return;
 
-    // Save profile to Riverpod state
-    ref.read(playerProfileProvider.notifier).setProfile(
-          inGameName: ign,
-          freeFireUid: uid,
-        );
+    setState(() => _isSubmitting = false);
 
     // Navigate to Home
     context.go(AppRoutes.homePath);
@@ -185,12 +208,26 @@ class _PlayerSetupScreenState extends ConsumerState<PlayerSetupScreen> {
 
                   // ── Subtitle ──
                   Text(
-                    'Enter your Free Fire details to get started with competitive tournaments.',
+                    'Enter your details to get started with competitive tournaments.',
                     style: AppTextStyles.bodyLg.copyWith(
                       color: AppColors.textMuted,
                     ),
                   ),
                   const SizedBox(height: AppDimensions.spaceXxl),
+
+                  // ── Name Field ──
+                  BooyahXTextField(
+                    label: 'Player Name',
+                    hintText: 'Enter your full name',
+                    controller: _nameController,
+                    focusNode: _nameFocusNode,
+                    validator: _validateName,
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () =>
+                        FocusScope.of(context).requestFocus(_ignFocusNode),
+                  ),
+                  const SizedBox(height: AppDimensions.spaceLg),
 
                   // ── IGN Field ──
                   BooyahXTextField(
@@ -222,6 +259,29 @@ class _PlayerSetupScreenState extends ConsumerState<PlayerSetupScreen> {
                     ],
                   ),
                   const SizedBox(height: AppDimensions.spaceXxl),
+
+                  // ── Error Message ──
+                  if (_errorMessage != null) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+                      decoration: BoxDecoration(
+                        color: AppColors.errorLight,
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                        border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Text(
+                        _errorMessage!,
+                        style: AppTextStyles.bodySm.copyWith(
+                          color: AppColors.error,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.spaceLg),
+                  ],
 
                   // ── Continue Button ──
                   BooyahXButton(

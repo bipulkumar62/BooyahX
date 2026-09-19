@@ -31,6 +31,11 @@ const tournamentSchema = new mongoose.Schema(
       trim: true,
       maxlength: [100, 'Name cannot exceed 100 characters'],
     },
+    game: {
+      type: String,
+      trim: true,
+      default: 'Free Fire',
+    },
     description: {
       type: String,
       trim: true,
@@ -38,26 +43,25 @@ const tournamentSchema = new mongoose.Schema(
     },
     mode: {
       type: String,
-      required: [true, 'Mode is required'],
       trim: true,
+      default: 'SOLO BR',
     },
     map: {
       type: String,
-      required: [true, 'Map is required'],
       trim: true,
+      default: 'Bermuda',
     },
     dateTime: {
       type: Date,
-      required: [true, 'Date/time is required'],
       index: true,
     },
     prizePool: {
       type: String,
-      required: [true, 'Prize pool is required'],
+      default: '₹0',
     },
     entryFee: {
       type: String,
-      required: [true, 'Entry fee is required'],
+      default: '₹0',
     },
     perKill: {
       type: String,
@@ -65,7 +69,7 @@ const tournamentSchema = new mongoose.Schema(
     },
     totalSlots: {
       type: Number,
-      required: [true, 'Total slots is required'],
+      default: 48,
       min: [1, 'Must have at least 1 slot'],
     },
     filledSlots: {
@@ -77,6 +81,7 @@ const tournamentSchema = new mongoose.Schema(
       type: String,
       enum: {
         values: [
+          'upcoming',
           'open',
           'registrationOpen',
           'almostFull',
@@ -88,7 +93,7 @@ const tournamentSchema = new mongoose.Schema(
         ],
         message: '{VALUE} is not a valid tournament status',
       },
-      default: 'open',
+      default: 'upcoming',
       index: true,
     },
     category: {
